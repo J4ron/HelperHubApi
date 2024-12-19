@@ -1,0 +1,17 @@
+# Build Stage
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+WORKDIR /src
+COPY HelperHub.sln ./
+COPY HelperHub/HelperHub.csproj ./HelperHub/
+RUN dotnet restore
+COPY . .
+WORKDIR /src/HelperHub
+RUN dotnet publish -c Release -o /app/publish
+
+# Runtime Stage
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
+WORKDIR /app
+RUN mkdir -p /app/data
+COPY --from=build /app/publish .
+EXPOSE 80
+ENTRYPOINT ["dotnet", "HelperHub.dll"]
