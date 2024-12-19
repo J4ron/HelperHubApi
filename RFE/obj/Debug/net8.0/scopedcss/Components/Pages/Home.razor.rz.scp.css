@@ -1,0 +1,13 @@
+.container[b-0flr3ge01f] {
+    margin: 0;
+    padding: 0;
+}
+
+.list-group-item[b-0flr3ge01f] {
+    display: flex;
+    align-items: center;
+}
+
+.list-group-item:hover[b-0flr3ge01f] {
+    background-color: #f0f0f0;
+}

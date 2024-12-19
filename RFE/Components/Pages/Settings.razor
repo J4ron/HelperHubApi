@@ -1,0 +1,45 @@
+﻿@page "/settings"
+@using RFE.Components.Data
+@rendermode InteractiveServer
+@inject ISettingsService SettingsService
+@inherits PathSettings
+
+<h3>PathSettings</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+<div class="alert alert-danger" role="alert">
+    @ErrorMessage
+</div>
+}
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control" @bind="_folderPath" placeholder="Ordnerpfad eingeben..." aria-label="Ordnerpfad eingeben...">
+    <button class="btn btn-dark shadow-sm" type="button" @onclick="SavePathAsync">Übernehmen</button>
+</div>
+
+@code {
+    private string _folderPath = string.Empty;
+    private string? ErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+        {
+            var settings = await SettingsService.LoadSettingsAsync();
+            _folderPath = settings.FolderPath ?? @"C:\DefaultPath";
+        }
+
+    private async Task SavePathAsync()
+    {
+        
+        if (!Directory.Exists(_folderPath))
+        {
+            ErrorMessage = "Der eingegebene Ordnerpfad ist ungültig.";
+                return;
+        
+        }
+        
+            ErrorMessage = null; // Reset Error Message
+            var settings = new Settings { FolderPath = _folderPath };
+            await SettingsService.SaveSettingsAsync(settings);
+    }
+}

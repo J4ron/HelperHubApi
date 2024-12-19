@@ -1,0 +1,189 @@
+﻿@page "/"
+@using System.IO
+@using RFE.Components.Data
+@rendermode InteractiveServer
+@inject ISettingsService SettingsService
+@inject NavigationManager NavigationManager
+
+<div class="container">
+    <div class="row">
+        <!-- Sidebar (Ordnerstruktur) -->
+        <div class="col-3 border-end" style="height: 100vh; overflow-y: auto;">
+            <h5>File Explorer</h5>
+            <ul class="list-group">
+                @foreach (var item in RootFolderItems)
+                {
+                    <li class="list-group-item" style="cursor: pointer;" @onclick="() => ToggleFolder(item)">
+                        @if (item.IsDirectory)
+                        {
+                            <i class="bi bi-folder-fill text-warning"></i> @item.Name
+                        }
+                        else
+                        {
+                            <i class="bi bi-file-earmark-text"></i> @item.Name
+                        }
+                    </li>
+                    @if (item.IsExpanded)
+                    {
+                        <ul class="list-group ms-3">
+                            @foreach (var subItem in item.SubItems)
+                            {
+                                <li class="list-group-item" style="cursor: pointer;" @onclick="() => ToggleFolder(subItem)">
+                                    @if (subItem.IsDirectory)
+                                    {
+                                        <i class="bi bi-folder-fill text-warning"></i> @subItem.Name
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-file-earmark-text"></i> @subItem.Name
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                }
+            </ul>
+        </div>
+
+        <div class="col-9 bg-dark text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>File Content</h5>
+                @if (!string.IsNullOrEmpty(CurrentFilePath))
+                {
+                    <button class="btn btn-secondary" @onclick="OpenRawView">
+                        Raw View
+                    </button>
+                }
+            </div>
+
+            <hr />
+
+            @if (string.IsNullOrEmpty(FileContent))
+            {
+                <p>Please select a file to view its content.</p>
+            }
+            else
+            {
+                <pre style="white-space: pre-wrap;">@FileContent</pre>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<FileSystemItem> RootFolderItems = new();
+    private string RootPath = string.Empty;
+    private string? CurrentFilePath = null;
+    private string? FileContent = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var settings = await SettingsService.LoadSettingsAsync();
+        RootPath = settings.FolderPath;
+
+        if (!string.IsNullOrEmpty(RootPath) && Directory.Exists(RootPath))
+        {
+            LoadFolderItems(RootPath); // Lädt den Inhalt des Root-Pfads
+        }
+        else
+        {
+            FileContent = "Invalid folder path in settings. Please update your settings.";
+        }
+    }
+
+    private void LoadFolderItems(string path)
+    {
+        try
+        {
+            var directoryItems = Directory.GetFileSystemEntries(path);
+            RootFolderItems = directoryItems.Select(item => new FileSystemItem
+            {
+                Path = item,
+                Name = Path.GetFileName(item),
+                IsDirectory = Directory.Exists(item),
+                SubItems = new List<FileSystemItem>()
+            }).ToList();
+
+            // Ordner-Inhalte laden (rekursiv) innerhalb des Root-Verzeichnisses
+            foreach (var folderItem in RootFolderItems.Where(item => item.IsDirectory))
+            {
+                LoadSubItems(folderItem);
+            }
+        }
+        catch (Exception ex)
+        {
+            FileContent = $"Error loading directory: {ex.Message}";
+        }
+    }
+
+    private void LoadSubItems(FileSystemItem folderItem)
+    {
+        try
+        {
+            var subItems = Directory.GetFileSystemEntries(folderItem.Path);
+            folderItem.SubItems = subItems.Select(subItem => new FileSystemItem
+            {
+                Path = subItem,
+                Name = Path.GetFileName(subItem),
+                IsDirectory = Directory.Exists(subItem),
+                SubItems = new List<FileSystemItem>()
+            }).ToList();
+
+            // Unterordner rekursiv laden
+            foreach (var subFolderItem in folderItem.SubItems.Where(item => item.IsDirectory))
+            {
+                LoadSubItems(subFolderItem);
+            }
+        }
+        catch (Exception ex)
+        {
+            FileContent = $"Error loading subfolder: {ex.Message}";
+        }
+    }
+
+    private void ToggleFolder(FileSystemItem item)
+    {
+        if (item.IsDirectory)
+        {
+            // Ordner auf- oder zuklappen
+            item.IsExpanded = !item.IsExpanded;
+        }
+        else
+        {
+            // Datei anzeigen
+            LoadFileContent(item);
+        }
+    }
+
+    private void LoadFileContent(FileSystemItem item)
+    {
+        try
+        {
+            CurrentFilePath = item.Path;
+            FileContent = File.ReadAllText(item.Path);
+        }
+        catch (Exception ex)
+        {
+            FileContent = $"Error loading file: {ex.Message}";
+        }
+    }
+
+    private void OpenRawView()
+    {
+        if (!string.IsNullOrEmpty(CurrentFilePath))
+        {
+            var rawUrl = $"{NavigationManager.BaseUri}raw?file={Uri.EscapeDataString(CurrentFilePath)}";
+            NavigationManager.NavigateTo(rawUrl, forceLoad: true);
+        }
+    }
+
+    // Repräsentiert eine Datei oder einen Ordner im Dateisystem
+    public class FileSystemItem
+    {
+        public string Path { get; set; }
+        public string Name { get; set; }
+        public bool IsDirectory { get; set; }
+        public List<FileSystemItem> SubItems { get; set; } = new List<FileSystemItem>();
+        public bool IsExpanded { get; set; } = false;
+    }
+}
