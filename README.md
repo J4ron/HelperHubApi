@@ -2,7 +2,9 @@
 <p align="center">
   <img src="https://github.com/J4ron/HelperHub/blob/master/assets/logo.png" width="550"/>
 </p>
-
+<p align="center">
+  <img src="https://github.com/J4ron/HelperHub/blob/master/assets/demo.png" width="550"/>
+</p>
 ## Demo
 
 url: https://helper-hub.skeptic-systems.de/
