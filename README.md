@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://github.com/J4ron/HelperHub/blob/master/Assets/helper-hub-logo.png" width="550" height="200"/>
+  <img src="https://github.com/J4ron/HelperHub/blob/master/Assets/helper-hub-logo.png" width="550"/>
 </p>
 
 ## Demo
