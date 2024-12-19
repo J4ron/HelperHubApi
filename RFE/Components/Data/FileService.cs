@@ -12,7 +12,6 @@ public class FileService : IFileService
 
         if (Directory.Exists(directoryPath))
         {
-            // Ordner hinzufügen
             var directories = Directory.GetDirectories(directoryPath);
             items.AddRange(directories.Select(dir => new FileItem
             {
@@ -20,8 +19,7 @@ public class FileService : IFileService
                 Path = dir,
                 IsDirectory = true
             }));
-
-            // Dateien hinzufügen
+            
             var files = Directory.GetFiles(directoryPath);
             items.AddRange(files.Select(file => new FileItem
             {

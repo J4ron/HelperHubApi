@@ -7,7 +7,6 @@
 
 <div class="container">
     <div class="row">
-        <!-- Sidebar (Ordnerstruktur) -->
         <div class="col-3 border-end" style="height: 100vh; overflow-y: auto;">
             <h5>File Explorer</h5>
             <ul class="list-group">
@@ -83,7 +82,7 @@
 
         if (!string.IsNullOrEmpty(RootPath) && Directory.Exists(RootPath))
         {
-            LoadFolderItems(RootPath); // Lädt den Inhalt des Root-Pfads
+            LoadFolderItems(RootPath);
         }
         else
         {
@@ -103,8 +102,7 @@
                 IsDirectory = Directory.Exists(item),
                 SubItems = new List<FileSystemItem>()
             }).ToList();
-
-            // Ordner-Inhalte laden (rekursiv) innerhalb des Root-Verzeichnisses
+            
             foreach (var folderItem in RootFolderItems.Where(item => item.IsDirectory))
             {
                 LoadSubItems(folderItem);
@@ -129,7 +127,6 @@
                 SubItems = new List<FileSystemItem>()
             }).ToList();
 
-            // Unterordner rekursiv laden
             foreach (var subFolderItem in folderItem.SubItems.Where(item => item.IsDirectory))
             {
                 LoadSubItems(subFolderItem);
@@ -145,12 +142,10 @@
     {
         if (item.IsDirectory)
         {
-            // Ordner auf- oder zuklappen
             item.IsExpanded = !item.IsExpanded;
         }
         else
         {
-            // Datei anzeigen
             LoadFileContent(item);
         }
     }
@@ -176,8 +171,7 @@
             NavigationManager.NavigateTo(rawUrl, forceLoad: true);
         }
     }
-
-    // Repräsentiert eine Datei oder einen Ordner im Dateisystem
+    
     public class FileSystemItem
     {
         public string Path { get; set; }
