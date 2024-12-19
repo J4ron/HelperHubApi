@@ -152,8 +152,7 @@ try
         IsDirectory = Directory.Exists(item),
         SubItems = new List<FileSystemItem>()
     }).ToList();
-
-    // Sort items: directories first, then files
+    
     RootFolderItems = RootFolderItems.OrderBy(item => item.IsDirectory ? 0 : 1).ToList();
 
     foreach (var folderItem in RootFolderItems.Where(item => item.IsDirectory))
@@ -179,8 +178,7 @@ try
         IsDirectory = Directory.Exists(subItem),
         SubItems = new List<FileSystemItem>()
     }).ToList();
-
-    // Sort subitems: files first, then directories (to only display subfolders after the files)
+    
     folderItem.SubItems = folderItem.SubItems.OrderBy(item => item.IsDirectory ? 1 : 0).ToList();
 
     foreach (var subFolderItem in folderItem.SubItems.Where(item => item.IsDirectory))
