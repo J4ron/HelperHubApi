@@ -23,12 +23,4 @@ Env
 If you're interested in contributing to this project, our docs are best places to start
 ( Docs )
 
-
-## Badges
-
-Add badges from somewhere like: [shields.io](https://shields.io/)
-
-
-
 [![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
-
