@@ -3,7 +3,7 @@
   <img src="https://github.com/J4ron/HelperHub/blob/master/assets/LogoHHub.png" width="550"/>
 </p>
 <p align="center">
-  <img src="https://github.com/J4ron/HelperHub/blob/master/assets/updateddemo.png">
+  <img src="https://github.com/J4ron/HelperHub/blob/master/assets/demo.png">
 </p>
 ## Demo
 
