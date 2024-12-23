@@ -1,1 +1,11 @@
+services:
+  helperhub:
+    image: skepticsystems/helper-hub:0.0.1
+    restart: unless-stopped
+    container_name: helperhub
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/data
 
+# Data Path is the path where your files can be stored
