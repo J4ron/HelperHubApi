@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "n8RAXUrBZcOtY2DB1M+jP4tXn7S6ComZWdoz+cemDBc=",
+  "Hash": "XOpxtPmGixzNwoXkPMowRJKuKQJoMD2e8+F17QH/3aw=",
   "Source": "RFE",
   "BasePath": "_content/RFE",
   "Mode": "Default",
@@ -74,6 +74,25 @@
       "OriginalItemSpec": "wwwroot\\app.css"
     },
     {
+      "Identity": "C:\\Users\\Jaron\\RiderProjects\\Skeptic - Raw File explorer\\RFE\\wwwroot\\assets\\LogoHHub.png",
+      "SourceId": "RFE",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Jaron\\RiderProjects\\Skeptic - Raw File explorer\\RFE\\wwwroot\\",
+      "BasePath": "_content/RFE",
+      "RelativePath": "assets/LogoHHub.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\assets\\LogoHHub.png"
+    },
+    {
       "Identity": "C:\\Users\\Jaron\\RiderProjects\\Skeptic - Raw File explorer\\RFE\\wwwroot\\bootstrap\\bootstrap.min.css",
       "SourceId": "RFE",
       "SourceType": "Discovered",
@@ -129,6 +148,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.png"
+    },
+    {
+      "Identity": "C:\\Users\\Jaron\\RiderProjects\\Skeptic - Raw File explorer\\RFE\\wwwroot\\js\\clipboard.js",
+      "SourceId": "RFE",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Jaron\\RiderProjects\\Skeptic - Raw File explorer\\RFE\\wwwroot\\",
+      "BasePath": "_content/RFE",
+      "RelativePath": "js/clipboard.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\clipboard.js"
     }
   ]
 }

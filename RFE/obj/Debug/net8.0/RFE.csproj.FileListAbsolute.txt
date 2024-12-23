@@ -30,3 +30,4 @@ C:\Users\Jaron\RiderProjects\Skeptic - Raw File explorer\RFE\obj\Debug\net8.0\re
 C:\Users\Jaron\RiderProjects\Skeptic - Raw File explorer\RFE\bin\Debug\net8.0\settings.json
 C:\Users\Jaron\RiderProjects\Skeptic - Raw File explorer\RFE\obj\Debug\net8.0\scopedcss\Components\Pages\Home.razor.rz.scp.css
 C:\Users\Jaron\RiderProjects\Skeptic - Raw File explorer\RFE\obj\Debug\net8.0\scopedcss\Components\Layout\ClearLayout.razor.rz.scp.css
+C:\Users\Jaron\RiderProjects\Skeptic - Raw File explorer\RFE\obj\Debug\net8.0\RFE.sourcelink.json

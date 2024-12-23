@@ -4,7 +4,13 @@
 @inject ISettingsService SettingsService
 @inherits PathSettings
 
-<h3>PathSettings</h3>
+<h3 class="text-white-50">PathSettings</h3>
+
+<style>
+    body {
+        background-color: #0d1117;
+    }
+</style>
 
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {

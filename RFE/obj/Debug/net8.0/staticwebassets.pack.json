@@ -9,6 +9,10 @@
       "PackagePath": "staticwebassets\\app.css"
     },
     {
+      "Id": "C:\\Users\\Jaron\\RiderProjects\\Skeptic - Raw File explorer\\RFE\\wwwroot\\assets\\LogoHHub.png",
+      "PackagePath": "staticwebassets\\assets\\LogoHHub.png"
+    },
+    {
       "Id": "C:\\Users\\Jaron\\RiderProjects\\Skeptic - Raw File explorer\\RFE\\wwwroot\\bootstrap\\bootstrap.min.css",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
     },
@@ -19,6 +23,10 @@
     {
       "Id": "C:\\Users\\Jaron\\RiderProjects\\Skeptic - Raw File explorer\\RFE\\wwwroot\\favicon.png",
       "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\Jaron\\RiderProjects\\Skeptic - Raw File explorer\\RFE\\wwwroot\\js\\clipboard.js",
+      "PackagePath": "staticwebassets\\js\\clipboard.js"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.RFE.Microsoft.AspNetCore.StaticWebAssets.props",
