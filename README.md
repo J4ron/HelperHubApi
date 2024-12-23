@@ -7,22 +7,33 @@
 </p>
 ## Demo
 
-url: https://helper-hub.skeptic-systems.de/
+
+url: https://helperhub.skeptic-systems.de/
 
 
 ## Install
 
-Docker 
+Docker
 
-Windows 
+
+
+nano docker-compose.yml
+
+copy the offical docker-compose.yml content from the repository to your local docker-compose.yml file
+
+Adjust path and post settings
+
+docker compose up -d
+
+
+
+Windows
+
+(may come soon)
+
 
 ## Configuration
 
-Env 
-
-## Contributing
-
-If you're interested in contributing to this project, our docs are best places to start
-( Docs )
+You can adjust the data path in the docker-compose.yml
 
 [![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
