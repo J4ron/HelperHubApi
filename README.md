@@ -25,11 +25,15 @@ Adjust path and post settings
 
 docker compose up -d
 
-## Configuration
-
-Env
 
 
 Windows
+
+(may come soon)
+
+
+## Configuration
+
+You can adjust the data path in the docker-compose.yml
 
 [![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
