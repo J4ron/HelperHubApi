@@ -16,75 +16,21 @@
                 <li class="list-group-item" style="cursor: pointer;" @onclick="() => ToggleFolder(item)">
                     @if (item.IsDirectory)
                     {
-                        if (!item.IsExpanded)
-                        {
-                        <i class="bi bi-caret-right-fill"></i>
-                        }
-                        else
-                        {
-                        <i class="bi bi-caret-down-fill"></i>
-                        }
-                        <i style="margin-left: 0.5em; user-select: none" class="bi bi-folder-fill text-warning"></i>
-                        <a class="text-dark text-decoration-none" style="margin-left: 0.5em; user-select: none">@item.Name</a>
+                    <i class="bi @(item.IsExpanded ? "bi-caret-down-fill" : "bi-caret-right-fill")"></i>
+                    <i style="margin-left: 0.2em; user-select: none" class="bi bi-folder-fill text-warning"></i>
+                    <a class="text-dark text-decoration-none" style="margin-left: 0.5em; user-select: none">@item.Name</a>
                     }
                     else
                     {
-                        <i class="bi bi-file-earmark-text"></i> <a class="text-dark text-decoration-none" style="margin-left: 0.5em;">@item.Name</a>
+                    <i class="bi bi-file-earmark-text"></i>
+                    <a class="text-dark text-decoration-none" style="margin-left: 0.5em;">@item.Name</a>
                     }
                 </li>
-                @if (item.IsExpanded)
+                @if (item.IsExpanded && item.SubItems.Any())
                 {
-                    <ul class="list-group ms-3">
-                        @foreach (var subItem in item.SubItems)
-                        {
-                        <li class="list-group-item" style="cursor: pointer;" @onclick="() => ToggleFolder(subItem)">
-                            @if (subItem.IsDirectory)
-                            {
-                                @if (subItem.IsExpanded)
-                                {
-                                    <i class="bi bi-caret-down-fill"></i>
-                                }
-                                else
-                                {
-                                    <i class="bi bi-caret-right-fill"></i>
-                                }
-                                <i style="margin-left: 0.5em; user-select: none" class="bi bi-folder-fill text-warning"></i>
-                                <a class="text-dark text-decoration-none" style="margin-left: 0.5em; user-select: none">@subItem.Name</a>
-                            }
-                            else
-                            {
-                                <i class="bi bi-file-earmark-text"></i> <a class="text-dark text-decoration-none" style="margin-left: 0.5em;">@subItem.Name</a>
-                            }
-                        </li>
-                        @if (subItem.IsExpanded)
-                        {
-                            <ul class="list-group ms-3">
-                                @foreach (var subSubItem in subItem.SubItems)
-                                {
-                                    <li class="list-group-item" style="cursor: pointer;" @onclick="() => ToggleFolder(subSubItem)">
-                                        @if (subSubItem.IsDirectory)
-                                        {
-                                            @if (subSubItem.IsExpanded)
-                                            {
-                                                <i class="bi bi-caret-down-fill"></i>
-                                            }
-                                            else
-                                            {
-                                                <i class="bi bi-caret-right-fill"></i>
-                                            }
-                                            <i style="margin-left: 0.5em; user-select: none" class="bi bi-folder-fill text-warning"></i>
-                                            <a class="text-dark text-decoration-none" style="margin-left: 0.5em; user-select: none">@subSubItem.Name</a>
-                                        }
-                                        else
-                                        {
-                                            <i class="bi bi-file-earmark-text"></i> <a class="text-dark text-decoration-none" style="margin-left: 0.5em;">@subSubItem.Name</a>
-                                        }
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        }
-                    </ul>
+                <ul class="list-group ms-3">
+                    @RenderSubFolders(item.SubItems)
+                </ul>
                 }
                 }
             </ul>
@@ -103,9 +49,9 @@
 
             <hr />
 
-            @if (FileContent == null && !string.IsNullOrEmpty(CurrentFilePath) && Path.GetExtension(CurrentFilePath).ToLower() == ".png")
+            @if (FileContent == null && !string.IsNullOrEmpty(CurrentFilePath) && IsImageFile(CurrentFilePath))
             {
-            <img src="@CurrentFilePath" class="img-fluid" alt="PNG Image" />
+            <img src="@CurrentFilePath" class="img-fluid" alt="Image" />
             }
             else if (!string.IsNullOrEmpty(FileContent))
             {
@@ -120,136 +66,172 @@
 </div>
 
 @code {
-private List<FileSystemItem> RootFolderItems = new();
-private string RootPath = string.Empty;
-private string? CurrentFilePath = null;
-private string? FileContent = null;
+    private List<FileSystemItem> RootFolderItems = new();
+    private string RootPath = string.Empty;
+    private string? CurrentFilePath = null;
+    private string? FileContent = null;
 
-protected override async Task OnInitializedAsync()
-{
-var settings = await SettingsService.LoadSettingsAsync();
-RootPath = settings.FolderPath;
-
-if (!string.IsNullOrEmpty(RootPath) && Directory.Exists(RootPath))
-{
-    LoadFolderItems(RootPath);
-}
-else
-{
-    FileContent = "Invalid folder path in settings. Please update your settings.";
-}
-}
-
-private void LoadFolderItems(string path)
-{
-try
-{
-    var directoryItems = Directory.GetFileSystemEntries(path);
-    RootFolderItems = directoryItems.Select(item => new FileSystemItem
+    protected override async Task OnInitializedAsync()
     {
+        var settings = await SettingsService.LoadSettingsAsync();
+        RootPath = settings.FolderPath;
+
+        if (!string.IsNullOrEmpty(RootPath) && Directory.Exists(RootPath))
+        {
+            LoadFolderItems(RootPath);
+        }
+        else
+        {
+            FileContent = "Invalid folder path in settings. Please update your settings.";
+        }
+    }
+
+    private void LoadFolderItems(string path)
+    {
+        try
+        {
+        var directoryItems = Directory.GetFileSystemEntries(path);
+        RootFolderItems = directoryItems.Select(item => new FileSystemItem
+        {
         Path = item,
         Name = Path.GetFileName(item),
         IsDirectory = Directory.Exists(item),
         SubItems = new List<FileSystemItem>()
-    }).ToList();
-    
-    RootFolderItems = RootFolderItems.OrderBy(item => item.IsDirectory ? 0 : 1).ToList();
+        }).ToList();
 
-    foreach (var folderItem in RootFolderItems.Where(item => item.IsDirectory))
-    {
-        LoadSubItems(folderItem);
+        RootFolderItems = RootFolderItems.OrderBy(item => item.IsDirectory ? 0 : 1).ToList();
+        }
+        catch (Exception ex)
+        {
+        FileContent = $"Error loading directory: {ex.Message}";
+        }
     }
-}
-catch (Exception ex)
-{
-    FileContent = $"Error loading directory: {ex.Message}";
-}
-}
 
-private void LoadSubItems(FileSystemItem folderItem)
-{
-try
-{
-    var subItems = Directory.GetFileSystemEntries(folderItem.Path);
-    folderItem.SubItems = subItems.Select(subItem => new FileSystemItem
+    private void ToggleFolder(FileSystemItem item)
     {
-        Path = subItem,
-        Name = Path.GetFileName(subItem),
-        IsDirectory = Directory.Exists(subItem),
-        SubItems = new List<FileSystemItem>()
-    }).ToList();
-    
-    folderItem.SubItems = folderItem.SubItems.OrderBy(item => item.IsDirectory ? 1 : 0).ToList();
-
-    foreach (var subFolderItem in folderItem.SubItems.Where(item => item.IsDirectory))
-    {
-        LoadSubItems(subFolderItem);
-    }
-}
-catch (Exception ex)
-{
-    FileContent = $"Error loading subfolder: {ex.Message}";
-}
-}
-
-private void ToggleFolder(FileSystemItem item)
-{
-    if (item.IsDirectory)
-    { 
+        if (item.IsDirectory)
+        {
+            if (!item.IsExpanded)
+            {
+                if (!item.SubItems.Any())
+                {
+                    LoadSubItems(item);
+                }
+            }
         item.IsExpanded = !item.IsExpanded;
+        }
+            else
+            {
+                LoadFileContent(item);
+            }
+        }
+
+        private void LoadSubItems(FileSystemItem folderItem)
+        {
+            try
+            {
+            var subItems = Directory.GetFileSystemEntries(folderItem.Path);
+            folderItem.SubItems = subItems.Select(subItem => new FileSystemItem
+            {
+            Path = subItem,
+            Name = Path.GetFileName(subItem),
+            IsDirectory = Directory.Exists(subItem),
+            SubItems = new List<FileSystemItem>()
+            }).ToList();
+
+            folderItem.SubItems = folderItem.SubItems.OrderBy(item => item.IsDirectory ? 0 : 1).ToList();
+            }
+            catch (Exception ex)
+            {
+            FileContent = $"Error loading subfolder: {ex.Message}";
+            }
+            }
+
+            private void LoadFileContent(FileSystemItem item)
+            {
+            try
+            {
+            CurrentFilePath = item.Path;
+
+            if (IsImageFile(item.Path))
+            {
+            FileContent = null;
+            }
+            else
+            {
+            FileContent = File.ReadAllText(item.Path);
+            }
+            }
+            catch (Exception ex)
+            {
+            FileContent = $"Error loading file: {ex.Message}";
+            }
     }
-    else if (!item.IsDirectory)
+
+    private bool IsImageFile(string filePath)
     {
-        LoadFileContent(item);
+        var extension = Path.GetExtension(filePath).ToLower();
+        return extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".gif";
+    }
+
+    private void OpenRawView()
+    {
+        if (!string.IsNullOrEmpty(CurrentFilePath))
+        {
+            var rawUrl = $"{NavigationManager.BaseUri}raw?file={Uri.EscapeDataString(CurrentFilePath)}";
+            NavigationManager.NavigateTo(rawUrl, forceLoad: true);
+        }
+    }
+
+    private RenderFragment RenderSubFolders(List<FileSystemItem> subItems) => builder =>
+    {
+    foreach (var subItem in subItems)
+    {
+        builder.OpenElement(0, "li");
+        builder.AddAttribute(1, "class", "list-group-item");
+        builder.AddAttribute(2, "style", "cursor: pointer;");
+        builder.AddAttribute(3, "onclick", EventCallback.Factory.Create(this, () => ToggleFolder(subItem)));
+
+    if (subItem.IsDirectory)
+    {
+        builder.OpenElement(4, "i");
+        builder.AddAttribute(5, "class", $"bi {(subItem.IsExpanded ? "bi-caret-down-fill" : "bi-caret-right-fill")}");
+        builder.CloseElement();
+
+        builder.OpenElement(6, "i");
+        builder.AddAttribute(7, "class", "bi bi-folder-fill text-warning");
+        builder.AddAttribute(8, "style", "margin-left: 0.5em; user-select: none");
+        builder.CloseElement();
+
+        builder.AddContent(9, subItem.Name);
     }
     else
     {
-        FileContent = "Du hast versucht, ein Verzeichnis zu öffnen, das außerhalb des erlaubten Bereichs liegt.";
+        builder.OpenElement(10, "i");
+        builder.AddAttribute(11, "class", "bi bi-file-earmark-text");
+        builder.CloseElement();
+
+        builder.AddContent(12, subItem.Name);
     }
-}
 
-private bool IsValidPath(string path)
-{
-    var fullPath = Path.GetFullPath(path);
-    return fullPath.StartsWith(Path.GetFullPath(RootPath), StringComparison.OrdinalIgnoreCase);
-}
+        builder.CloseElement(); 
 
-private void LoadFileContent(FileSystemItem item)
-{
-try
-{
-    CurrentFilePath = item.Path;
+        if (subItem.IsExpanded && subItem.SubItems.Any())
+        {
+            builder.OpenElement(13, "ul");
+            builder.AddAttribute(14, "class", "list-group ms-3");
+            builder.AddContent(15, RenderSubFolders(subItem.SubItems));
+            builder.CloseElement();
+        }
+    }
+};
 
-    if (Path.GetExtension(item.Name).ToLower() == ".png")
+    public class FileSystemItem
     {
-        FileContent = null;
+        public string Path { get; set; }
+        public string Name { get; set; }
+        public bool IsDirectory { get; set; }
+        public List<FileSystemItem> SubItems { get; set; } = new();
+        public bool IsExpanded { get; set; } = false;
     }
-    else
-    {
-        FileContent = File.ReadAllText(item.Path);
-    }
-}
-catch (Exception ex)
-{
-    FileContent = $"Error loading file: {ex.Message}";
-}
-}
-
-private void OpenRawView()
-{
-if (!string.IsNullOrEmpty(CurrentFilePath))
-{
-    var rawUrl = $"{NavigationManager.BaseUri}raw?file={Uri.EscapeDataString(CurrentFilePath)}";
-    NavigationManager.NavigateTo(rawUrl, forceLoad: true);
-}
-}
-
-public class FileSystemItem
-{
-    public string Path { get; set; }
-    public string Name { get; set; }
-    public bool IsDirectory { get; set; }
-    public List<FileSystemItem> SubItems { get; set; } = new List<FileSystemItem>();
-    public bool IsExpanded { get; set; } = false;
-}
 }
