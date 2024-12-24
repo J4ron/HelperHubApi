@@ -2,10 +2,10 @@
 # Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
-COPY RFE/RFE.csproj ./RFE/
-WORKDIR /app/RFE
+COPY RenderApi/RenderApi.csproj ./RenderApi/
+WORKDIR /app/RenderApi
 RUN dotnet restore
-COPY RFE/. ./
+COPY RenderApi/. ./
 RUN dotnet publish -c Release -o /app/publish
 
 # Runtime
@@ -13,5 +13,5 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 RUN mkdir /data
-EXPOSE 5000
-ENTRYPOINT ["dotnet", "RFE.dll"]
+EXPOSE 5030
+ENTRYPOINT ["dotnet", "RenderApi.dll"]
