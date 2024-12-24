@@ -4,6 +4,7 @@
 @rendermode InteractiveServer
 @inject ISettingsService SettingsService
 @inject NavigationManager NavigationManager
+@inject HttpClient Http
 
 <div class="container">
     <div class="row">
@@ -13,29 +14,29 @@
             <ul class="list-group">
                 @foreach (var item in RootFolderItems)
                 {
-                <li class="list-group-item bg-black bg-dark text-white-50 border-0 border-bottom border-secondary" style="cursor: pointer;" @onclick="() => ToggleFolder(item)">
-                    @if (item.IsDirectory)
+                    <li class="list-group-item bg-black bg-dark text-white-50 border-0 border-bottom border-secondary" style="cursor: pointer;" @onclick="() => ToggleFolder(item)">
+                        @if (item.IsDirectory)
+                        {
+                            <i class="bi @(item.IsExpanded ? "bi-caret-down-fill" : "bi-caret-right-fill")"></i>
+                            <i style="margin-left: 0.2em; user-select: none" class="bi bi-folder-fill text-warning"></i>
+                            <a class="text-dark text-decoration-none text-white" style="margin-left: 0.5em; user-select: none">@item.Name</a>
+                        }
+                        else
+                        {
+                            <i class="bi bi-file-earmark-text"></i>
+                            <a class="text-dark text-decoration-none text-white" style="margin-left: 0.5em;">@item.Name</a>
+                        }
+                    </li>
+                    @if (item.IsExpanded && item.SubItems.Any())
                     {
-                    <i class="bi @(item.IsExpanded ? "bi-caret-down-fill" : "bi-caret-right-fill")"></i>
-                    <i style="margin-left: 0.2em; user-select: none" class="bi bi-folder-fill text-warning"></i>
-                    <a class="text-dark text-decoration-none text-white" style="margin-left: 0.5em; user-select: none">@item.Name</a>
+                        <ul class="list-group ms-3">
+                            @RenderSubFolders(item.SubItems)
+                        </ul>
                     }
-                    else
-                    {
-                    <i class="bi bi-file-earmark-text"></i>
-                    <a class="text-dark text-decoration-none text-white" style="margin-left: 0.5em;">@item.Name</a>
-                    }
-                </li>
-                @if (item.IsExpanded && item.SubItems.Any())
-                {
-                <ul class="list-group ms-3">
-                    @RenderSubFolders(item.SubItems)
-                </ul>
-                }
                 }
             </ul>
         </div>
-
+        
         <div class="col-9 text-white">
             <div class="d-flex justify-content-between align-items-center">
                 <h5>Content</h5>
@@ -53,15 +54,15 @@
 
             @if (!string.IsNullOrEmpty(CurrentFilePath) && IsImageFile(CurrentFilePath))
             {
-                        <img src="http://localhost:5051/api/Image/GetImage?relativePath=@CurrentFilePath" class="img-fluid" alt="Image" />
+                <img src="http://localhost:5051/api/Image/GetImage?relativePath=@CurrentFilePath" class="img-fluid" alt="Image" />
             }
             else if (!string.IsNullOrEmpty(CurrentFilePath) && IsMp3File(CurrentFilePath))
             {
-            <audio controls preload="auto" src="http://localhost:5051/api/Audio/GetAudio?relativePath=@CurrentFilePath"></audio>
+                <audio controls preload="auto" src="http://localhost:5051/api/Audio/GetAudio?relativePath=@CurrentFilePath"></audio>
             }
             else if (!string.IsNullOrEmpty(FileContent))
             {
-            <pre style="white-space: pre-wrap;">@FileContent</pre>
+                <pre style="white-space: pre-wrap;">@FileContent</pre>
             }
             else
             {
@@ -98,20 +99,20 @@
     {
         try
         {
-        var directoryItems = Directory.GetFileSystemEntries(path);
-        RootFolderItems = directoryItems.Select(item => new FileSystemItem
-        {
-        Path = item,
-        Name = Path.GetFileName(item),
-        IsDirectory = Directory.Exists(item),
-        SubItems = new List<FileSystemItem>()
-        }).ToList();
+            var directoryItems = Directory.GetFileSystemEntries(path);
+            RootFolderItems = directoryItems.Select(item => new FileSystemItem
+            {
+                Path = item,
+                Name = Path.GetFileName(item),
+                IsDirectory = Directory.Exists(item),
+                SubItems = new List<FileSystemItem>()
+            }).ToList();
 
-        RootFolderItems = RootFolderItems.OrderBy(item => item.IsDirectory ? 0 : 1).ToList();
+            RootFolderItems = RootFolderItems.OrderBy(item => item.IsDirectory ? 0 : 1).ToList();
         }
         catch (Exception ex)
         {
-        FileContent = $"Error loading directory: {ex.Message}";
+            FileContent = $"Error loading directory: {ex.Message}";
         }
     }
 
@@ -126,54 +127,54 @@
                     LoadSubItems(item);
                 }
             }
-        item.IsExpanded = !item.IsExpanded;
+            item.IsExpanded = !item.IsExpanded;
         }
-            else
-            {
-                LoadFileContent(item);
-            }
-        }
-
-        private void LoadSubItems(FileSystemItem folderItem)
+        else
         {
-            try
-            {
+            LoadFileContent(item);
+        }
+    }
+
+    private void LoadSubItems(FileSystemItem folderItem)
+    {
+        try
+        {
             var subItems = Directory.GetFileSystemEntries(folderItem.Path);
             folderItem.SubItems = subItems.Select(subItem => new FileSystemItem
             {
-            Path = subItem,
-            Name = Path.GetFileName(subItem),
-            IsDirectory = Directory.Exists(subItem),
-            SubItems = new List<FileSystemItem>()
+                Path = subItem,
+                Name = Path.GetFileName(subItem),
+                IsDirectory = Directory.Exists(subItem),
+                SubItems = new List<FileSystemItem>()
             }).ToList();
 
             folderItem.SubItems = folderItem.SubItems.OrderBy(item => item.IsDirectory ? 0 : 1).ToList();
-            }
-            catch (Exception ex)
-            {
+        }
+        catch (Exception ex)
+        {
             FileContent = $"Error loading subfolder: {ex.Message}";
-            }
-            }
+        }
+    }
 
-            private void LoadFileContent(FileSystemItem item)
-            {
-            try
-            {
+    private void LoadFileContent(FileSystemItem item)
+    {
+        try
+        {
             CurrentFilePath = item.Path;
 
             if (IsImageFile(item.Path))
             {
-            FileContent = null;
+                FileContent = null;
             }
             else
             {
-            FileContent = File.ReadAllText(item.Path);
+                FileContent = File.ReadAllText(item.Path);
             }
-            }
-            catch (Exception ex)
-            {
+        }
+        catch (Exception ex)
+        {
             FileContent = $"Error loading file: {ex.Message}";
-            }
+        }
     }
 
     private bool IsImageFile(string filePath)
@@ -190,58 +191,66 @@
         }
         return Path.GetExtension(filePath)?.ToLower() == ".mp3";
     }
-
+    
     private void OpenRawView()
     {
         if (!string.IsNullOrEmpty(CurrentFilePath))
         {
-            var rawUrl = $"{NavigationManager.BaseUri}raw?file={Uri.EscapeDataString(CurrentFilePath)}";
-            NavigationManager.NavigateTo(rawUrl, forceLoad: true);
+            try
+            {
+                var rawUrl = $"http://localhost:5051/api/Raw/GetRawText?relativePath={Uri.EscapeDataString(CurrentFilePath)}";
+                
+                NavigationManager.NavigateTo(rawUrl, forceLoad: true);
+            }
+            catch (Exception ex)
+            {
+                FileContent = $"Error opening raw text URL: {ex.Message}";
+            }
         }
     }
 
     private RenderFragment RenderSubFolders(List<FileSystemItem> subItems) => builder =>
     {
-    foreach (var subItem in subItems)
-    {
-        builder.OpenElement(0, "li");
-        builder.AddAttribute(1, "class", "list-group-item");
-        builder.AddAttribute(2, "style", "cursor: pointer;");
-        builder.AddAttribute(3, "onclick", EventCallback.Factory.Create(this, () => ToggleFolder(subItem)));
-
-    if (subItem.IsDirectory)
-    {
-        builder.OpenElement(4, "i");
-        builder.AddAttribute(5, "class", $"bi {(subItem.IsExpanded ? "bi-caret-down-fill" : "bi-caret-right-fill")}");
-        builder.CloseElement();
-
-        builder.OpenElement(6, "i");
-        builder.AddAttribute(7, "class", "bi bi-folder-fill text-warning");
-        builder.AddAttribute(8, "style", "margin-left: 0.5em; user-select: none");
-        builder.CloseElement();
-
-        builder.AddContent(9, subItem.Name);
-    }
-    else
-    {
-        builder.OpenElement(10, "i");
-        builder.AddAttribute(11, "class", "bi bi-file-earmark-text");
-        builder.CloseElement();
-
-        builder.AddContent(12, subItem.Name);
-    }
-
-        builder.CloseElement(); 
-
-        if (subItem.IsExpanded && subItem.SubItems.Any())
+        foreach (var subItem in subItems)
         {
-            builder.OpenElement(13, "ul");
-            builder.AddAttribute(14, "class", "list-group ms-3");
-            builder.AddContent(15, RenderSubFolders(subItem.SubItems));
+            builder.OpenElement(0, "li");
+            builder.AddAttribute(1, "class", "list-group-item");
+            builder.AddAttribute(2, "style", "cursor: pointer;");
+            builder.AddAttribute(3, "onclick", EventCallback.Factory.Create(this, () => ToggleFolder(subItem)));
+
+            if (subItem.IsDirectory)
+            {
+                builder.OpenElement(4, "i");
+                builder.AddAttribute(5, "class", $"bi {(subItem.IsExpanded ? "bi-caret-down-fill" : "bi-caret-right-fill")}");
+                builder.CloseElement();
+
+                builder.OpenElement(6, "i");
+                builder.AddAttribute(7, "class", "bi bi-folder-fill text-warning");
+                builder.AddAttribute(8, "style", "margin-left: 0.5em; user-select: none");
+                builder.CloseElement();
+
+                builder.AddContent(9, subItem.Name);
+            }
+            else
+            {
+                builder.OpenElement(10, "i");
+                builder.AddAttribute(11, "class", "bi bi-file-earmark-text");
+                builder.CloseElement();
+
+                builder.AddContent(12, subItem.Name);
+            }
+
             builder.CloseElement();
+
+            if (subItem.IsExpanded && subItem.SubItems.Any())
+            {
+                builder.OpenElement(13, "ul");
+                builder.AddAttribute(14, "class", "list-group ms-3");
+                builder.AddContent(15, RenderSubFolders(subItem.SubItems));
+                builder.CloseElement();
+            }
         }
-    }
-};
+    };
 
     public class FileSystemItem
     {
