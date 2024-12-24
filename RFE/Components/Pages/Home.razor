@@ -53,11 +53,11 @@
 
             @if (!string.IsNullOrEmpty(CurrentFilePath) && IsImageFile(CurrentFilePath))
             {
-            <img src="@CurrentFilePath" class="img-fluid" alt="Image" />
+                        <img src="http://localhost:5051/api/Image/GetImage?relativePath=@CurrentFilePath" class="img-fluid" alt="Image" />
             }
             else if (!string.IsNullOrEmpty(CurrentFilePath) && IsMp3File(CurrentFilePath))
             {
-            <audio controls preload="auto" src="@CurrentFilePath"></audio>
+            <audio controls preload="auto" src="http://localhost:5051/api/Audio/GetAudio?relativePath=@CurrentFilePath"></audio>
             }
             else if (!string.IsNullOrEmpty(FileContent))
             {
