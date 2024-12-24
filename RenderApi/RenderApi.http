@@ -1,0 +1,6 @@
+@RenderApi_HostAddress = http://localhost:5051
+
+GET {{RenderApi_HostAddress}}/RenderApi/
+Accept: application/json
+
+###
