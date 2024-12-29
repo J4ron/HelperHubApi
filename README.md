@@ -32,6 +32,6 @@ You can adjust the data path in the docker-compose.yml
 
 ## Docker Image
 
-https://hub.docker.com/repository/docker/skepticsystems/helper-hub/general
+https://hub.docker.com/repository/docker/skepticsystems/helper-hub-api
 
 [![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
