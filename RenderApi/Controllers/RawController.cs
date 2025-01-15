@@ -1,45 +1,28 @@
-﻿using Microsoft.Extensions.Options;
-using RFE.Components.Pages;
-
+﻿using Microsoft.AspNetCore.Mvc;
 namespace RenderApi.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using Microsoft.Extensions.Options;
 
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RawController : ControllerBase
+[Route("api/[controller]")]
+[ApiController]
+public class RawController : ControllerBase
+{
+    [HttpGet("GetRawText")]
+    public IActionResult GetRawText(string relativePath)
     {
-        private readonly string _rootPath;
+        var filePath = relativePath;
 
-        public RawController(IOptions<Settings> settings)
+        if (!System.IO.File.Exists(filePath)) return NotFound("Audio file not found");
+        try
         {
-            _rootPath = settings.Value.FolderPath;
+            var fileContent = System.IO.File.ReadAllText(filePath);
+            return Ok(fileContent);
         }
-
-        [HttpGet("GetRawText")]
-        public IActionResult GetRawText(string relativePath)
+        catch (UnauthorizedAccessException)
         {
-            var filePath = Path.Combine(_rootPath, relativePath);
-
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound("File not found");
-            }
-
-            try
-            {
-                var fileContent = System.IO.File.ReadAllText(filePath);
-                return Ok(fileContent);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Forbid("You do not have permission to access this file.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            return Forbid("You do not have permission to access this file.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-
+}

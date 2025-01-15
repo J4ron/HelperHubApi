@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RFE", "RFE\RFE.csproj", "{072FC35B-C82C-4CF9-B36E-23BBA9D684AC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenderApi", "RenderApi\RenderApi.csproj", "{8B5C6D0E-5824-4D10-AA61-83C58CBA8855}"
 EndProject
 Global

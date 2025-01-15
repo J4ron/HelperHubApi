@@ -12,6 +12,5 @@ RUN dotnet publish -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
-RUN mkdir /data
-EXPOSE 5030
+EXPOSE 5010
 ENTRYPOINT ["dotnet", "RenderApi.dll"]

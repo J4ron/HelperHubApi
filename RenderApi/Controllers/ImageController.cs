@@ -1,45 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using RFE.Components.Pages;
-
 namespace RenderApi.Controllers;
 
- [Route("api/[controller]")]
-    [ApiController]
-    public class ImageController : ControllerBase
+[Route("api/[controller]")]
+[ApiController]
+public class ImageController : ControllerBase
+{
+    private readonly FileMimeType _fileMimeType = new FileMimeType();
+
+    [HttpGet("GetImage")]
+    public IActionResult GetImage(string relativePath)
     {
-        private readonly string _rootPath;
+        var filePath = relativePath;
 
-        public ImageController(IOptions<Settings> settings)
-        {
-            _rootPath = settings.Value.FolderPath;
-        }
+        if (!System.IO.File.Exists(filePath)) return NotFound("Image file not found");
 
-        [HttpGet("GetImage")]
-        public IActionResult GetImage(string relativePath)
-        {
-            var filePath = Path.Combine(_rootPath, relativePath);
+        var fileBytes = System.IO.File.ReadAllBytes(filePath);
+        var mimeType = _fileMimeType.GetMimeType(filePath);
 
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound("Image file not found");
-            }
-
-            var fileBytes = System.IO.File.ReadAllBytes(filePath);
-            var mimeType = GetMimeType(filePath);
-
-            return File(fileBytes, mimeType);
-        }
-
-        private string GetMimeType(string filePath)
-        {
-            var extension = Path.GetExtension(filePath).ToLower();
-            return extension switch
-            {
-                ".jpg" or ".jpeg" => "image/jpeg",
-                ".png" => "image/png",
-                ".gif" => "image/gif",
-                _ => "application/octet-stream"
-            };
-        }
+        return File(fileBytes, mimeType);
     }
+}
